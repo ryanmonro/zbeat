@@ -20,10 +20,7 @@ for (name of drumNames){
 
 var players = new Tone.Players(
   playersIndex, 
-  function(){
-    console.log('loaded');
-    Tone.Transport.start();
-  }
+  start
 ).toMaster();
 players.volume.value = -6;
 
@@ -104,13 +101,19 @@ var seq = new Tone.Sequence(function(time, note){
   for(row of grid){
     row[note].noteTime = time;
   }
-}, range(0, STEPS - 1), "8n").start(0);
+}, range(0, STEPS - 1), "8n");
 
 canvas.addEventListener('click', function(e){
   var col = Math.floor(e.offsetX * STEPS / WIDTH);
   var row = Math.floor(e.offsetY * ROWS / HEIGHT);
   grid[row][col].on = !grid[row][col].on;
 })
+
+function start(){
+  console.log('loaded');
+  seq.start(0);
+  Tone.Transport.start();
+}
 
 function range(min, max){
   var arr = [];
