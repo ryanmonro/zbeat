@@ -98,9 +98,11 @@ var seq = new Tone.Sequence(function(time, note){
     }
   }
   window.step = note;
-  for(row of grid){
-    row[note].noteTime = time;
-  }
+  Tone.Draw.schedule(function(){
+    for(row of grid){
+      row[note].noteTime = Tone.Transport.getSecondsAtTime(time);
+    }
+  })
 }, range(0, STEPS - 1), "8n");
 
 canvas.addEventListener('click', function(e){
