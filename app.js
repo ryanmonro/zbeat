@@ -6,12 +6,26 @@ var HEIGHT = 480;
 
 var step = 0;
 
-var instruments = ["Kick", "Snare", "Rim", "Clap", "Clav", "Clap", "Mcng", "Lcng"].map(function(name){
-    return {name: name, mute: false, player: new Tone.Player("sounds/" + name + ".WAV").toMaster()};
-});
-for(instrument of instruments){
-  instrument.player.volume.value = -6;
+// var instruments = ["Kick", "Snare", "Rim", "Clap", "Clav", "Cowb", "Mcng", "Lcng"].map(function(name){
+//     return {name: name, mute: false, player: new Tone.Player("sounds/" + name + ".WAV").toMaster()};
+// });
+// for(instrument of instruments){
+// }
+
+var drumNames = ["Kick", "Snare", "Rim", "Clap", "Clav", "Cowb", "Mcng", "Lcng"];
+var playersIndex = {};
+for (name of drumNames){
+  playersIndex[name] = "sounds/" + name + ".WAV";
 }
+
+var players = new Tone.Players(
+  playersIndex, 
+  function(){
+    console.log('loaded');
+    Tone.Transport.start();
+  }
+).toMaster();
+players.volume.value = -6;
 
 var canvas = document.querySelector('#zdog');
 
@@ -37,10 +51,10 @@ for (var row = 0; row < ROWS; row++){
       width: cellWidth * 2 / 3,
       height: cellHeight * 2/ 3,
     });
-    var green = 'BB';
+    var green = (Math.floor(0x90 - row * 0x40 / ROWS)).toString(16);
+    // var green = 'FF';
     // ellipse.color = '#' + (row * 2).toString(16) + green + (i * 2).toString(16);
-    ellipse.color = '#' + (Math.floor(0x88 + row * 0x77 / ROWS)).toString(16) + green + (Math.floor(0x33 + i * 0xCC / STEPS)).toString(16);
-    console.log(ellipse.color);
+    ellipse.color = '#' + (Math.floor(0x22 + row * 0xBB / ROWS)).toString(16) + green + (Math.floor(0xCC - i * 0xCC / STEPS)).toString(16);
     ellipse.on = false;// Math.random() < 0.5;
     gridRow.push(ellipse);
   }
@@ -82,7 +96,8 @@ function animate() {
 var seq = new Tone.Sequence(function(time, note){
   for(row in grid){
     if (grid[row][note].on == true) {
-      instruments[row].player.start(time);
+      // instruments[row].player.start(time);
+      players.get(drumNames[row]).start(time);
     }
   }
   window.step = note;
@@ -106,4 +121,3 @@ function range(min, max){
 }
 
 animate();
-Tone.Transport.start();
